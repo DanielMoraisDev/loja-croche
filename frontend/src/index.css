@@ -1,0 +1,99 @@
+@import url("https://fonts.googleapis.com/css2?family=Alexandria:wght@400;500;600;700&family=Open+Sans:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  gap: 15px;
+  height: 100vh;
+  color: black;
+}
+
+@layer utilities {
+  .padding-left-section {
+    @apply pl-[34px] md:pl-[92px] lg:pl-[156px] xl:pl-[216px];
+  }
+
+  .padding-right-section {
+    @apply pr-[34px] md:pr-[92px] lg:pr-[156px] xl:pr-[216px];
+  }
+
+  .padding-x-section {
+    @apply px-[20px] md:px-[92px] lg:px-[156px] xl:px-[216px];
+  }
+
+  .padding-y-section-mid {
+    @apply py-[60px];
+  }
+
+  .padding-y-section-high {
+    @apply py-[90px];
+  }
+
+  .gap-x-divider {
+    @apply gap-8;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-custom::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  .scrollbar-custom {
+    scrollbar-width: thin;
+  }
+
+  .scrollbar-custom::-webkit-scrollbar-button {
+    display: none;
+    border-radius: 9999px;
+    width: 0;
+    height: 0;
+  }
+
+  .scrollbar-custom::-webkit-scrollbar-track {
+    border-radius: 9999px;
+    margin-block: 4px;
+  }
+
+  .scrollbar-custom::-webkit-scrollbar-thumb {
+    background-color: #950031;
+    border-radius: 9999px;
+    border: 2px solid #e9becc;
+  }
+
+  @keyframes floatDownUp {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(6px); /* deslocamento vertical */
+    }
+  }
+
+  .animate-float-slow {
+    animation: floatDownUp 2.5s ease-in-out infinite;
+  }
+}

@@ -1,0 +1,36 @@
+services:
+  backend-loja-croche:
+    build: ./backend
+    container_name: backend-loja-croche
+    restart: always
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres-loja-croche
+    networks:
+      - loja-croche-net
+      - loja-croche-backend-net
+
+  postgres-loja-croche:
+    container_name: postgres-loja-croche
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER_LOJA_CROCHE}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD_LOJA_CROCHE}
+      POSTGRES_DB: ${POSTGRES_DB_LOJA_CROCHE}
+    ports:
+      - "5443:5432"
+    volumes:
+      - postgres_data_loja_croche:/var/lib/postgresql/data
+    networks:
+      - loja-croche-backend-net
+
+volumes:
+  postgres_data_loja_croche:
+
+networks:
+  loja-croche-net:
+    driver: bridge
+  loja-croche-backend-net:
+    driver: bridge

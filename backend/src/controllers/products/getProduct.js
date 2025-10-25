@@ -10,8 +10,13 @@ export const getProduct = async (req, res) => {
       return res.status(200).json({ error: "Não foi encotrado um produto" });
     }
 
-    return res.status(200).json(users);
+    return res.status(200).json(product);
   } catch (error) {
-    console.log("[PRODUCTS][GET ONE] An error occurred, error: " + error);
+    console.error(
+      "[CONTROLLERS][PRODUCTS][GET ONE] An error occurred, error: " + error
+    );
+    return res.status(500).json({
+      error: "Error interno",
+    });
   }
 };

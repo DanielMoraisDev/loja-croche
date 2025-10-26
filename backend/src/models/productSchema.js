@@ -18,7 +18,7 @@ const Product = conn.define(
       required: true,
     },
     image: {
-      type: DataTypes.TEXT,
+      type: DataTypes.STRING,
       allowNull: false,
       required: true,
     },

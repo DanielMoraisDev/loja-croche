@@ -15,11 +15,9 @@
     "cors": "^2.8.5",
     "dotenv": "^16.6.1",
     "express": "^4.19.2",
-    "minio": "^8.0.6",
     "multer": "^2.0.2",
     "pg": "^8.16.3",
-    "sequelize": "^6.37.7",
-    "uuid": "^13.0.0"
+    "sequelize": "^6.37.7"
   },
   "devDependencies": {
     "nodemon": "^3.1.3"

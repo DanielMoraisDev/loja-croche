@@ -1,7 +1,7 @@
-import { findObjectByFileId } from "./findObjetcByFileId.js";
+import { findObjectByFileId } from "./findObjetcByFileId";
 
 const minioHelpers = {
-  findByPk: findObjectByFileId,
+  findByFileId: findObjectByFileId,
 };
 
 export default minioHelpers;

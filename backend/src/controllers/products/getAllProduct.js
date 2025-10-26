@@ -1,4 +1,4 @@
-import { tryAwait } from "../../../utils/tryAwait.js";
+import { tryAwait } from "../../utils/tryAwait.js";
 import Product from "../../models/productSchema.js";
 
 export const getAllProduct = async (req, res) => {

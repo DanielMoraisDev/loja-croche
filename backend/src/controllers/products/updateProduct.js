@@ -1,4 +1,4 @@
-import { tryAwait } from "../../../utils/tryAwait.js";
+import { tryAwait } from "../../utils/tryAwait.js";
 import { bucketName, minioClient } from "../../db/minio.js";
 import Product from "../../models/productSchema.js";
 import { v4 as uuidv4 } from "uuid";

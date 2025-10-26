@@ -1,5 +1,8 @@
 import dotenv from "dotenv";
-dotenv.config();
+import dotenvExpand from "dotenv-expand";
+
+const myEnv = dotenv.config();
+dotenvExpand.expand(myEnv);
 import { Sequelize } from "sequelize";
 
 const database = process.env.POSTGRES_DB;

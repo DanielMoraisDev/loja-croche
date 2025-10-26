@@ -3,6 +3,19 @@ import { bucketName, minioClient } from "../../db/minio.js";
 import Product from "../../models/productSchema.js";
 import { v4 as uuidv4 } from "uuid";
 
+import dotenv from "dotenv";
+import dotenvExpand from "dotenv-expand";
+
+const myEnv = dotenv.config();
+dotenvExpand.expand(myEnv);
+
+const global_host = process.env.GLOBAL_HOST;
+
+const defined_host =
+  global_host == "127.0.0.1" || global_host == "host.docker.internal"
+    ? "localhost"
+    : global_host;
+
 export const updateProduct = async (req, res) => {
   try {
     const id = req.params.id;
@@ -57,7 +70,7 @@ export const updateProduct = async (req, res) => {
         .json({ error: "Erro ao tentar subir o novo arquivo" });
     }
 
-    const imageUrl = `http://localhost:9000/${bucketName}/${objectName}`;
+    const imageUrl = `http://${defined_host}:9000/${bucketName}/${objectName}`;
 
     product.image_url = imageUrl;
 

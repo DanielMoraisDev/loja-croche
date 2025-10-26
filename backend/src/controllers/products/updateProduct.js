@@ -70,7 +70,13 @@ export const updateProduct = async (req, res) => {
         .json({ error: "Erro ao tentar subir o novo arquivo" });
     }
 
-    const imageUrl = `http://${defined_host}:9000/${bucketName}/${objectName}`;
+    const proto = (
+      req.headers["x-forwarded-proto"] ||
+      req.protocol ||
+      "http"
+    ).toString();
+    const hostHeader = req.get("host") || defined_host;
+    const imageUrl = `${proto}://${hostHeader}/minio/${bucketName}/${objectName}`;
 
     product.image_url = imageUrl;
 

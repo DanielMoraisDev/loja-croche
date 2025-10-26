@@ -2,6 +2,11 @@ import express from "express";
 import cors from "cors";
 import conn from "./src/db/postgres.js";
 import routes from "./src/routes/router.js";
+import dotenv from "dotenv";
+import dotenvExpand from "dotenv-expand";
+
+const myEnv = dotenv.config();
+dotenvExpand.expand(myEnv);
 
 const app = express();
 

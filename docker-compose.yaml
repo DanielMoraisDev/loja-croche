@@ -8,6 +8,9 @@ services:
       - "3000:3000"
     depends_on:
       - postgres-loja-croche
+      - minio-loja-croche
+    env_file:
+      - .env.backend-${BACKEND_DOCKER_ENVIRONMENT}
     networks:
       - loja-croche-net
       - loja-croche-backend-net

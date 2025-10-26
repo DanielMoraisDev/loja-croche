@@ -13,8 +13,5 @@ export const getAllProduct = async (req, res) => {
     console.error(
       "[CONTROLLERS][PRODUCTS][GET ALL] An error occurred, error: " + error
     );
-    return res.status(500).json({
-      error: "Error interno",
-    });
   }
 };

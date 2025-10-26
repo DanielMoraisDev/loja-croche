@@ -30,8 +30,5 @@ export const deleteProduct = async (req, res) => {
     console.error(
       "[CONTROLLERS][PRODUCTS][DESTROY] An error occurred, error: " + error
     );
-    return res.status(500).json({
-      error: "Error interno",
-    });
   }
 };

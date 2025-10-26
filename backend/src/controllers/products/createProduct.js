@@ -1,4 +1,6 @@
+import { v4 as uuidv4 } from "uuid";
 import Product from "../../models/productSchema.js";
+import { minioClient, bucketName } from "../../db/minio.js";
 
 export const createProduct = async (req, res) => {
   try {
@@ -16,9 +18,27 @@ export const createProduct = async (req, res) => {
       return res.status(500).json({ error: "O nome do produto é obrigatório" });
     }
 
+    const fileId = uuidv4();
+    const objectName = `products/${fileId}-${name}`;
+
+    await minioClient.putObject(
+      bucketName,
+      objectName,
+      foto_produto.buffer,
+      foto_produto.size,
+      {
+        "Content-Type": foto_produto.mimetype,
+      }
+    );
+
+    const imageUrl = await minioClient.presignedGetObject(
+      bucketName,
+      objectName
+    );
+
     const product = {
       name: name,
-      image: foto_produto.path,
+      image: imageUrl,
     };
 
     const create_product = await Product.create(product);

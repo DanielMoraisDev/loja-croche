@@ -38,15 +38,7 @@ export const createProduct = async (req, res) => {
       return res.status(500).json({ error: "Erro ao tentar subir arquivo" });
     }
 
-    const [errUrl, imageUrl] = await tryAwait(
-      minioClient.presignedGetObject(bucketName, objectName)
-    );
-    if (errUrl) {
-      console.error("[CONTROLLERS][PRODUCTS][CREATE][PRESIGNED URL]", errUrl);
-      return res
-        .status(500)
-        .json({ error: "Erro ao tentar gerar a URL do arquivo" });
-    }
+    const imageUrl = `http://localhost:9000/${bucketName}/${objectName}`;
 
     const product = {
       name: name,
@@ -56,7 +48,10 @@ export const createProduct = async (req, res) => {
 
     const [errCreate, create_product] = await tryAwait(Product.create(product));
     if (errCreate) {
-      console.error("[CONTROLLERS][PRODUCTS][CREATE][CREATE PRODUCT]", errUrl);
+      console.error(
+        "[CONTROLLERS][PRODUCTS][CREATE][CREATE PRODUCT]",
+        errCreate
+      );
       return res
         .status(500)
         .json({ error: "Erro ao tentar criar um novo produto" });

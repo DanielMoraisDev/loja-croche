@@ -57,15 +57,7 @@ export const updateProduct = async (req, res) => {
         .json({ error: "Erro ao tentar subir o novo arquivo" });
     }
 
-    const [errUrl, imageUrl] = await tryAwait(
-      minioClient.presignedGetObject(bucketName, objectName)
-    );
-    if (errUrl) {
-      console.error("[CONTROLLERS][PRODUCTS][UPDATE][PRESIGNED URL]", errUrl);
-      return res
-        .status(500)
-        .json({ error: "Erro ao tentar gerar a URL do arquivo" });
-    }
+    const imageUrl = `http://localhost:9000/${bucketName}/${objectName}`;
 
     product.image_url = imageUrl;
 

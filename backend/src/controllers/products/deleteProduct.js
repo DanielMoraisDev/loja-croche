@@ -25,12 +25,23 @@ export const deleteProduct = async (req, res) => {
       console.error("[CONTROLLERS][PRODUCTS][DESTROY][DELETE FILE]", errDelete);
       return res
         .status(500)
-        .json({ error: "Erro ao tentar deletar o arquivo antigo" });
+        .json({ error: "Erro ao tentar deletar o arquivo" });
     }
 
-    const deleteProduct = await Product.destroy({ where: { id_product: id } });
+    const [errDeleteProduct, deleteProduct] = await tryAwait(
+      Product.destroy({ where: { id_product: id } })
+    );
+    if (errDeleteProduct) {
+      console.error(
+        "[CONTROLLERS][PRODUCTS][DESTROY][DELETE PRODUCT]",
+        errDelete
+      );
+      return res
+        .status(500)
+        .json({ error: "Erro ao tentar deletar o produto" });
+    }
 
-    if (deleteProduct.length < 1) {
+    if (deleteProduct < 1) {
       return res.status(200).json({ error: "Não foi encotrado um produto" });
     }
 

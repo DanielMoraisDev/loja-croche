@@ -1,3 +1,4 @@
+import { tryAwait } from "../../../utils/tryAwait.js";
 import Product from "../../models/productSchema.js";
 
 export const getProduct = async (req, res) => {
@@ -15,7 +16,7 @@ export const getProduct = async (req, res) => {
       return res.status(500).json({ error: "Erro ao procurar produto" });
     }
 
-    if (product.length < 1) {
+    if (product == null || product.length < 1) {
       return res.status(200).json({ error: "Não foi encotrado um produto" });
     }
 

@@ -10,10 +10,26 @@ services:
       - postgres-loja-croche
       - minio-loja-croche
     env_file:
-      - .env.backend-${BACKEND_DOCKER_ENVIRONMENT}
+      - .env.backend-${DOCKER_ENVIRONMENT}
     networks:
       - loja-croche-net
       - loja-croche-backend-net
+
+  fronted-loja-croche:
+    profiles: ["loja-croche"]
+    build: ./frontend
+    container_name: frontend-loja-croche
+    restart: always
+    ports:
+      - "5173:5173"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - backend-loja-croche
+    env_file:
+      - .env.frontend-${DOCKER_ENVIRONMENT}
+    networks:
+      - loja-croche-net
 
   postgres-loja-croche:
     profiles: ["loja-croche", "loja-croche-data"]

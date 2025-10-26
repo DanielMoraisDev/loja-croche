@@ -1,3 +1,5 @@
 .env
-.env.local-docker
-.env.server-docker
+.env.backend-local-docker
+.env.backend-server-docker
+.env.frontend-local-docker
+.env.frontend-server-docker

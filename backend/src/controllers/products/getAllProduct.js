@@ -1,8 +1,16 @@
+import { tryAwait } from "../../../utils/tryAwait.js";
 import Product from "../../models/productSchema.js";
 
 export const getAllProduct = async (req, res) => {
   try {
-    const products = await Product.findAll();
+    const [errFindAll, products] = await tryAwait(Product.findAll());
+    if (errFindAll) {
+      console.error(
+        "[CONTROLLERS][PRODUCTS][GET ALL][FINDING PRODUCTS]",
+        errUrl
+      );
+      return res.status(500).json({ error: "Erro ao procurar produtos" });
+    }
 
     if (products.length < 1) {
       return res.status(200).json({ error: "Não foram encontrados produtos" });

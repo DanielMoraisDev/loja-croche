@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
 import Product from "../../models/productSchema.js";
 import { minioClient, bucketName } from "../../db/minio.js";
+import { tryAwait } from "../../../utils/tryAwait.js";
 
 export const createProduct = async (req, res) => {
   try {
@@ -21,20 +22,31 @@ export const createProduct = async (req, res) => {
     const fileId = uuidv4();
     const objectName = `products/${fileId}-${name}`;
 
-    await minioClient.putObject(
-      bucketName,
-      objectName,
-      foto_produto.buffer,
-      foto_produto.size,
-      {
-        "Content-Type": foto_produto.mimetype,
-      }
+    const [errUpload] = await tryAwait(
+      minioClient.putObject(
+        bucketName,
+        objectName,
+        foto_produto.buffer,
+        foto_produto.size,
+        {
+          "Content-Type": foto_produto.mimetype,
+        }
+      )
     );
+    if (errUpload) {
+      console.error("[CONTROLLERS][PRODUCTS][CREATE][UPLOAD FILE]", errUpload);
+      return res.status(500).json({ error: "Erro ao tentar subir arquivo" });
+    }
 
-    const imageUrl = await minioClient.presignedGetObject(
-      bucketName,
-      objectName
+    const [errUrl, imageUrl] = await tryAwait(
+      minioClient.presignedGetObject(bucketName, objectName)
     );
+    if (errUrl) {
+      console.error("[CONTROLLERS][PRODUCTS][CREATE][PRESIGNED URL]", errUrl);
+      return res
+        .status(500)
+        .json({ error: "Erro ao tentar gerar a URL do arquivo" });
+    }
 
     const product = {
       name: name,
@@ -42,12 +54,12 @@ export const createProduct = async (req, res) => {
       image_object_name: objectName,
     };
 
-    const create_product = await Product.create(product);
-
-    if (!create_product) {
-      return res.status(500).json({
-        error: "Houve um error ao tentar criar o produto",
-      });
+    const [errCreate, create_product] = await tryAwait(Product.create(product));
+    if (errCreate) {
+      console.error("[CONTROLLERS][PRODUCTS][CREATE][CREATE PRODUCT]", errUrl);
+      return res
+        .status(500)
+        .json({ error: "Erro ao tentar criar um novo produto" });
     }
 
     return res.status(200).json({

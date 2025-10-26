@@ -1,3 +1,4 @@
+import { tryAwait } from "../../../utils/tryAwait.js";
 import { bucketName, minioClient } from "../../db/minio.js";
 import Product from "../../models/productSchema.js";
 
@@ -17,7 +18,15 @@ export const deleteProduct = async (req, res) => {
       image_object_name: existingProduct.image_object_name,
     };
 
-    await minioClient.removeObject(bucketName, product.image_object_name);
+    const [errDelete] = await tryAwait(
+      minioClient.removeObject(bucketName, product.image_object_name)
+    );
+    if (errDelete) {
+      console.error("[CONTROLLERS][PRODUCTS][DESTROY][DELETE FILE]", errDelete);
+      return res
+        .status(500)
+        .json({ error: "Erro ao tentar deletar o arquivo antigo" });
+    }
 
     const deleteProduct = await Product.destroy({ where: { id_product: id } });
 

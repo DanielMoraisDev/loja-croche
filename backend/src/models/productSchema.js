@@ -17,8 +17,13 @@ const Product = conn.define(
       allowNull: false,
       required: true,
     },
-    image: {
-      type: DataTypes.STRING,
+    image_url: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+      required: true,
+    },
+    image_object_name: {
+      type: DataTypes.TEXT,
       allowNull: false,
       required: true,
     },

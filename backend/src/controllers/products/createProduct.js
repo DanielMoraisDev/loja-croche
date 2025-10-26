@@ -38,7 +38,8 @@ export const createProduct = async (req, res) => {
 
     const product = {
       name: name,
-      image: imageUrl,
+      image_url: imageUrl,
+      image_object_name: objectName,
     };
 
     const create_product = await Product.create(product);

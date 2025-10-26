@@ -1,5 +1,5 @@
+import { bucketName, minioClient } from "../../db/minio.js";
 import Product from "../../models/productSchema.js";
-import fs from "fs";
 
 export const deleteProduct = async (req, res) => {
   try {
@@ -13,20 +13,11 @@ export const deleteProduct = async (req, res) => {
 
     const product = {
       name: existingProduct.name,
-      image: existingProduct.path,
+      image_url: existingProduct.image_url,
+      image_object_name: existingProduct.image_object_name,
     };
 
-    const oldImagePath = existingProduct.image;
-
-    if (oldImagePath && fs.existsSync(oldImagePath)) {
-      try {
-        fs.unlinkSync(oldImagePath);
-      } catch (err) {
-        res.status(500).json({
-          error: "Erro ao deletar imagem antiga",
-        });
-      }
-    }
+    await minioClient.removeObject(bucketName, product.image_object_name);
 
     const deleteProduct = await Product.destroy({ where: { id_product: id } });
 

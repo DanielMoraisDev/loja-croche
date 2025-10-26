@@ -1,0 +1,137 @@
+services:
+  traefik:
+    profiles: ["loja-croche"]
+    image: traefik:v3.1
+    container_name: traefik
+    restart: always
+    command:
+      - "--api.dashboard=true"
+      - "--api.insecure=false"
+
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+
+      - "--certificatesresolvers.letsencrypt.acme.dnschallenge=true"
+      - "--certificatesresolvers.letsencrypt.acme.dnschallenge.provider=cloudflare"
+      - "--certificatesresolvers.letsencrypt.acme.email=danielfelipe2905@gmail.com"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
+    environment:
+      - CF_API_EMAIL=${CF_API_EMAIL}
+      - CF_DNS_API_TOKEN=${CF_DNS_API_TOKEN}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8085:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "letsencrypt:/letsencrypt"
+    networks:
+      - proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik-dashboard.rule=Host(`traefik.teste-cottarseguros.site`)"
+      - "traefik.http.routers.traefik-dashboard.service=api@internal"
+      - "traefik.http.routers.traefik-dashboard.entrypoints=websecure"
+      - "traefik.http.routers.traefik-dashboard.tls.certresolver=letsencrypt"
+
+  frontend-loja-croche:
+    profiles: ["loja-croche"]
+    build: ./frontend
+    container_name: frontend-loja-croche
+    restart: always
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend-loja-croche
+    networks:
+      - loja-croche-net
+      - proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend-loja-croche.rule=Host(`teste-cottarseguros.site`)"
+      - "traefik.http.routers.frontend-loja-croche.entrypoints=websecure"
+      - "traefik.http.routers.frontend-loja-croche.tls.certresolver=letsencrypt"
+      - "traefik.http.services.frontend-loja-croche.loadbalancer.server.port=5173"
+      - "traefik.docker.network=loja-croche_proxy"
+
+  backend-loja-croche:
+    profiles: ["loja-croche"]
+    build: ./backend
+    container_name: backend-loja-croche
+    restart: always
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres-loja-croche
+      - minio-loja-croche
+    networks:
+      - loja-croche-net
+      - loja-croche-backend-net
+      - proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.backend.rule=Host(`teste-cottarseguros.site`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.backend.entrypoints=websecure"
+      - "traefik.http.routers.backend.tls.certresolver=letsencrypt"
+      - "traefik.http.services.backend.loadbalancer.server.port=3000"
+      - "traefik.docker.network=loja-croche_proxy"
+
+  postgres-loja-croche:
+    profiles: ["loja-croche", "loja-croche-data"]
+    container_name: postgres-loja-croche
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER_LOJA_CROCHE}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD_LOJA_CROCHE}
+      POSTGRES_DB: ${POSTGRES_DB_LOJA_CROCHE}
+    ports:
+      - "5443:5432"
+    volumes:
+      - postgres_data_loja_croche:/var/lib/postgresql/data
+    networks:
+      - loja-croche-backend-net
+  minio-loja-croche:
+    profiles: ["loja-croche", "loja-croche-data"]
+    image: minio/minio:RELEASE.2025-02-03T21-03-04Z-cpuv1
+    container_name: minio-loja-croche
+    restart: always
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data_loja_croche:/data
+    networks:
+      - loja-croche-backend-net
+      - proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.middlewares.minio-strip.stripprefix.prefixes=/minio"
+      - "traefik.http.routers.minio.rule=Host(`teste-cottarseguros.site`) && PathPrefix(`/minio`)"
+      - "traefik.http.routers.minio.entrypoints=websecure"
+      - "traefik.http.routers.minio.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.minio.middlewares=minio-strip@docker"
+      - "traefik.http.services.minio.loadbalancer.server.port=9000"
+      - "traefik.docker.network=loja-croche_proxy"
+
+volumes:
+  postgres_data_loja_croche:
+  minio_data_loja_croche:
+  letsencrypt:
+
+networks:
+  proxy:
+    external: false
+  loja-croche-net:
+    driver: bridge
+  loja-croche-backend-net:
+    driver: bridge

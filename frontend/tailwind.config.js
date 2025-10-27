@@ -3,15 +3,12 @@ export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
-      fontFamily: {
-        alexandria: ["Alexandria", "sans-serif"],
-        poppins: ["Poppins", "sans-serif"],
-        opensans: ["Open Sans", "sans-serif"],
-      },
       colors: {
-        wine: "#950031",
-        raspberry: "#9E2D5A",
-        plum: "#381020",
+        soft_light_yellow: "#FFF4C7",
+        warm_peachy_orange: "#FFAB6F",
+        soft_fresh_green: "#C0DDAD",
+        very_light_saturated_orange: "#FFDEA3",
+        deep_orange: "#B06338",
       },
     },
   },

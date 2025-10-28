@@ -10,6 +10,7 @@ const myEnv = dotenv.config();
 dotenvExpand.expand(myEnv);
 
 const global_host = process.env.GLOBAL_HOST;
+const minio_port = process.env.MINIO_PORT;
 
 const defined_host =
   global_host == "127.0.0.1" || global_host == "host.docker.internal"
@@ -20,7 +21,7 @@ export const updateProduct = async (req, res) => {
   try {
     const id = req.params.id;
 
-    const { name } = req.body;
+    const { name, type, size, price } = req.body;
 
     const foto_produto = req.file;
 
@@ -32,6 +33,9 @@ export const updateProduct = async (req, res) => {
 
     const product = {
       name: name,
+      type: type,
+      size: size,
+      price: price,
       image_url: existingProduct.image_url,
       image_object_name: existingProduct.image_object_name,
     };
@@ -76,9 +80,14 @@ export const updateProduct = async (req, res) => {
       "http"
     ).toString();
     const hostHeader = req.get("host") || defined_host;
-    const imageUrl = `${proto}://${hostHeader}/minio/${bucketName}/${objectName}`;
 
-    product.image_url = imageUrl;
+    let imageUrl;
+
+    if (global_host === "127.0.0.1" || global_host === "host.docker.internal") {
+      imageUrl = `${proto}://${defined_host}:${minio_port}/${bucketName}/${objectName}`;
+    } else {
+      imageUrl = `${proto}://${hostHeader}/minio/${bucketName}/${objectName}`;
+    }
 
     const [errUpdate] = await tryAwait(
       Product.update(product, { where: { id_product: id } })

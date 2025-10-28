@@ -9,6 +9,7 @@ const myEnv = dotenv.config();
 dotenvExpand.expand(myEnv);
 
 const global_host = process.env.GLOBAL_HOST;
+const minio_port = process.env.MINIO_PORT;
 
 const defined_host =
   global_host == "127.0.0.1" || global_host == "host.docker.internal"
@@ -17,7 +18,7 @@ const defined_host =
 
 export const createProduct = async (req, res) => {
   try {
-    const { name } = req.body;
+    const { name, type, size, price } = req.body;
 
     const foto_produto = req.file;
 
@@ -29,6 +30,22 @@ export const createProduct = async (req, res) => {
 
     if (!name) {
       return res.status(500).json({ error: "O nome do produto é obrigatório" });
+    }
+
+    if (!price) {
+      return res
+        .status(500)
+        .json({ error: "O preço do produto é obrigatório" });
+    }
+
+    if (!size) {
+      return res
+        .status(500)
+        .json({ error: "O tamanho do produto é obrigatório" });
+    }
+
+    if (!type) {
+      return res.status(500).json({ error: "O tipo do produto é obrigatório" });
     }
 
     const fileId = uuidv4();
@@ -55,11 +72,22 @@ export const createProduct = async (req, res) => {
       req.protocol ||
       "http"
     ).toString();
+
     const hostHeader = req.get("host") || defined_host;
-    const imageUrl = `${proto}://${hostHeader}/minio/${bucketName}/${objectName}`;
+
+    let imageUrl;
+
+    if (global_host === "127.0.0.1" || global_host === "host.docker.internal") {
+      imageUrl = `${proto}://${defined_host}:${minio_port}/${bucketName}/${objectName}`;
+    } else {
+      imageUrl = `${proto}://${hostHeader}/minio/${bucketName}/${objectName}`;
+    }
 
     const product = {
       name: name,
+      type: type,
+      size: size,
+      price: price,
       image_url: imageUrl,
       image_object_name: objectName,
     };

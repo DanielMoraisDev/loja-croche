@@ -60,7 +60,7 @@ services:
       - "traefik.docker.network=loja-croche_proxy"
 
   backend-loja-croche:
-    profiles: ["loja-croche"]
+    profiles: ["loja-croche", "loja-croche-data"]
     build: ./backend
     container_name: backend-loja-croche
     restart: always

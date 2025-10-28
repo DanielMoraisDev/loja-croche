@@ -1,0 +1,68 @@
+services:
+  backend-loja-croche:
+    profiles: ["loja-croche", "loja-croche-data"]
+    build: ./backend
+    container_name: backend-loja-croche
+    restart: no
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres-loja-croche
+      - minio-loja-croche
+    networks:
+      - loja-croche-net
+      - loja-croche-backend-net
+
+  frontend-loja-croche:
+    profiles: ["loja-croche"]
+    build: ./frontend
+    container_name: frontend-loja-croche
+    restart: always
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend-loja-croche
+    networks:
+      - loja-croche-net
+
+  postgres-loja-croche:
+    profiles: ["loja-croche", "loja-croche-data"]
+    container_name: postgres-loja-croche
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER_LOJA_CROCHE}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD_LOJA_CROCHE}
+      POSTGRES_DB: ${POSTGRES_DB_LOJA_CROCHE}
+    ports:
+      - "5443:5432"
+    volumes:
+      - postgres_data_loja_croche:/var/lib/postgresql/data
+    networks:
+      - loja-croche-backend-net
+  minio-loja-croche:
+    profiles: ["loja-croche", "loja-croche-data"]
+    image: minio/minio:RELEASE.2025-02-03T21-03-04Z-cpuv1
+    container_name: minio-loja-croche
+    restart: always
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data_loja_croche:/data
+    networks:
+      - loja-croche-backend-net
+
+volumes:
+  postgres_data_loja_croche:
+  minio_data_loja_croche:
+
+networks:
+  loja-croche-net:
+    driver: bridge
+  loja-croche-backend-net:
+    driver: bridge

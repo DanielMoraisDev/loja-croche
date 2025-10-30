@@ -1,20 +1,12 @@
 import { v4 as uuidv4 } from "uuid";
 import Product from "../../models/productSchema.js";
-import { minioClient, bucketName } from "../../db/minio.js";
+import { minioClient } from "../../db/minio.js";
 import { tryAwait } from "../../utils/tryAwait.js";
-import dotenv from "dotenv";
-import dotenvExpand from "dotenv-expand";
+import configs from "../../config.js";
 
-const myEnv = dotenv.config();
-dotenvExpand.expand(myEnv);
-
-const global_host = process.env.GLOBAL_HOST;
-const minio_port = process.env.MINIO_PORT;
-
-const defined_host =
-  global_host == "127.0.0.1" || global_host == "host.docker.internal"
-    ? "localhost"
-    : global_host;
+const host = configs.hosts.minio.host;
+const port = configs.hosts.minio.port;
+const bucketName = configs.hosts.minio.bucket;
 
 export const createProduct = async (req, res) => {
   try {
@@ -53,7 +45,7 @@ export const createProduct = async (req, res) => {
 
     const [errUpload] = await tryAwait(
       minioClient.putObject(
-        bucketName,
+        bucket_name,
         objectName,
         foto_produto.buffer,
         foto_produto.size,
@@ -67,21 +59,7 @@ export const createProduct = async (req, res) => {
       return res.status(500).json({ error: "Erro ao tentar subir arquivo" });
     }
 
-    const proto = (
-      req.headers["x-forwarded-proto"] ||
-      req.protocol ||
-      "http"
-    ).toString();
-
-    const hostHeader = req.get("host") || defined_host;
-
-    let imageUrl;
-
-    if (global_host === "127.0.0.1" || global_host === "host.docker.internal") {
-      imageUrl = `${proto}://${defined_host}:${minio_port}/${bucketName}/${objectName}`;
-    } else {
-      imageUrl = `${proto}://${hostHeader}/minio/${bucketName}/${objectName}`;
-    }
+    const imageUrl = `http://${host}:${port}/${bucketName}/${objectName}`;
 
     const product = {
       name: name,

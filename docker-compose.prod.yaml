@@ -3,6 +3,8 @@ services:
     profiles: ["loja-croche"]
     image: traefik:v3.1
     container_name: traefik
+    environment:
+      - GLOBAL_HOST=${GLOBAL_HOST_LOJA_CROCHE_PROD}
     restart: always
     command:
       - "--api.dashboard=true"
@@ -44,6 +46,8 @@ services:
     build: ./frontend
     container_name: frontend-loja-croche
     restart: always
+    environment:
+      - GLOBAL_HOST=${GLOBAL_HOST_LOJA_CROCHE_PROD}
     ports:
       - "5173:5173"
     depends_on:
@@ -75,7 +79,7 @@ services:
       - proxy
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.backend.rule=Host(`teste-cottarseguros.site`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.backend.rule=Host(`backend.teste-cottarseguros.site`)"
       - "traefik.http.routers.backend.entrypoints=websecure"
       - "traefik.http.routers.backend.tls.certresolver=letsencrypt"
       - "traefik.http.services.backend.loadbalancer.server.port=3000"
@@ -115,8 +119,7 @@ services:
       - proxy
     labels:
       - "traefik.enable=true"
-      - "traefik.http.middlewares.minio-strip.stripprefix.prefixes=/minio"
-      - "traefik.http.routers.minio.rule=Host(`teste-cottarseguros.site`) && PathPrefix(`/minio`)"
+      - "traefik.http.routers.minio.rule=Host(`minio.teste-cottarseguros.site`)"
       - "traefik.http.routers.minio.entrypoints=websecure"
       - "traefik.http.routers.minio.tls.certresolver=letsencrypt"
       - "traefik.http.routers.minio.middlewares=minio-strip@docker"

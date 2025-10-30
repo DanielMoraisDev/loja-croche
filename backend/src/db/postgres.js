@@ -1,15 +1,11 @@
-import dotenv from "dotenv";
-import dotenvExpand from "dotenv-expand";
-
-const myEnv = dotenv.config();
-dotenvExpand.expand(myEnv);
 import { Sequelize } from "sequelize";
+import configs from "../config.js";
 
-const database = process.env.POSTGRES_DB;
-const password = process.env.POSTGRES_PASSWORD;
-const user = process.env.POSTGRES_USER;
-const host = process.env.POSTGRES_HOST;
-const port = process.env.POSTGRES_PORT;
+const database = configs.hosts.postgres.database;
+const password = configs.hosts.postgres.password;
+const user = configs.hosts.postgres.user;
+const host = configs.hosts.postgres.host;
+const port = configs.hosts.postgres.port;
 
 const conn = new Sequelize(database, user, password, {
   host: host,

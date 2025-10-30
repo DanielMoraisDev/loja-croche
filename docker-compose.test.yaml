@@ -2,6 +2,8 @@ services:
   backend-loja-croche:
     profiles: ["loja-croche", "loja-croche-data"]
     build: ./backend
+    environment:
+      - GLOBAL_HOST=${GLOBAL_HOST_LOJA_CROCHE_TEST}
     container_name: backend-loja-croche
     restart: always
     ports:

@@ -1,9 +1,11 @@
-import { tryAwait } from "../../utils/tryAwait.js";
 import Product from "../../models/productSchema.js";
+import globalUtils from "../../utils/globalUtils.js";
 
 export const getAllProduct = async (req, res) => {
   try {
-    const [errFindAll, products] = await tryAwait(Product.findAll());
+    const [errFindAll, products] = await globalUtils.tryAwait(
+      Product.findAll()
+    );
     if (errFindAll) {
       console.error(
         "[CONTROLLERS][PRODUCTS][GET ALL][FINDING PRODUCTS]",

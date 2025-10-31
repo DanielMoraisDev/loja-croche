@@ -1,4 +1,4 @@
-import { tryAwait } from "../../utils/tryAwait.js";
+import globalUtils from "../../utils/globalUtils.js";
 import { bucketName, minioClient } from "../../db/minio.js";
 import Product from "../../models/productSchema.js";
 
@@ -18,7 +18,7 @@ export const deleteProduct = async (req, res) => {
       image_object_name: existingProduct.image_object_name,
     };
 
-    const [errDelete] = await tryAwait(
+    const [errDelete] = await globalUtils.tryAwait(
       minioClient.removeObject(bucketName, product.image_object_name)
     );
     if (errDelete) {
@@ -28,7 +28,7 @@ export const deleteProduct = async (req, res) => {
         .json({ error: "Erro ao tentar deletar o arquivo" });
     }
 
-    const [errDeleteProduct, deleteProduct] = await tryAwait(
+    const [errDeleteProduct, deleteProduct] = await globalUtils.tryAwait(
       Product.destroy({ where: { id_product: id } })
     );
     if (errDeleteProduct) {

@@ -1,8 +1,8 @@
-import { tryAwait } from "../../utils/tryAwait.js";
 import { minioClient } from "../../db/minio.js";
 import Product from "../../models/productSchema.js";
 import { v4 as uuidv4 } from "uuid";
 import configs from "../../config.js";
+import globalUtils from "../../utils/globalUtils.js";
 
 const host = configs.hosts.minio.host;
 const port = configs.hosts.minio.port;
@@ -31,7 +31,7 @@ export const updateProduct = async (req, res) => {
       image_object_name: existingProduct.image_object_name,
     };
 
-    const [errDelete] = await tryAwait(
+    const [errDelete] = await globalUtils.tryAwait(
       minioClient.removeObject(bucketName, product.image_object_name)
     );
     if (errDelete) {
@@ -47,7 +47,7 @@ export const updateProduct = async (req, res) => {
     const fileId = uuidv4();
     const objectName = `products/${fileId}-${name}`;
 
-    const [errUpload] = await tryAwait(
+    const [errUpload] = await globalUtils.tryAwait(
       minioClient.putObject(
         bucketName,
         objectName,
@@ -74,7 +74,7 @@ export const updateProduct = async (req, res) => {
 
     const imageUrl = `http://${host}:${port}/${bucketName}/${objectName}`;
 
-    const [errUpdate] = await tryAwait(
+    const [errUpdate] = await globalUtils.tryAwait(
       Product.update(product, { where: { id_product: id } })
     );
     if (errUpdate) {

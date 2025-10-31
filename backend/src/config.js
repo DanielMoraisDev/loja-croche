@@ -31,6 +31,8 @@ if (POSTGRES_HOST != "127.0.0.1") {
   POSTGRES_PORT = POSTGRES_PORT_DOCKER;
 }
 
+const PASSWORD_JWT = process.env.PASSWORD_JWT;
+
 const configs = {
   hosts: {
     minio: {
@@ -47,6 +49,11 @@ const configs = {
       database: POSTGRES_DB,
       password: POSTGRES_PASSWORD,
       user: POSTGRES_USER,
+    },
+  },
+  auths: {
+    token: {
+      secret: PASSWORD_JWT,
     },
   },
 };

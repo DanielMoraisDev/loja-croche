@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
 import Product from "../../models/productSchema.js";
 import { minioClient } from "../../db/minio.js";
-import { tryAwait } from "../../utils/tryAwait.js";
+import globalUtils from "../../utils/globalUtils.js";
 import configs from "../../config.js";
 
 const host = configs.hosts.minio.host;
@@ -43,7 +43,7 @@ export const createProduct = async (req, res) => {
     const fileId = uuidv4();
     const objectName = `products/${fileId}-${name}`;
 
-    const [errUpload] = await tryAwait(
+    const [errUpload] = await globalUtils.tryAwait(
       minioClient.putObject(
         bucket_name,
         objectName,
@@ -70,7 +70,9 @@ export const createProduct = async (req, res) => {
       image_object_name: objectName,
     };
 
-    const [errCreate, create_product] = await tryAwait(Product.create(product));
+    const [errCreate, create_product] = await globalUtils.tryAwait(
+      Product.create(product)
+    );
     if (errCreate) {
       console.error(
         "[CONTROLLERS][PRODUCTS][CREATE][CREATE PRODUCT]",

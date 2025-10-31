@@ -1,11 +1,11 @@
-import { tryAwait } from "../../utils/tryAwait.js";
 import Product from "../../models/productSchema.js";
+import globalUtils from "../../utils/globalUtils.js";
 
 export const getProduct = async (req, res) => {
   try {
     const id = req.params.id;
 
-    const [errFindOne, product] = await tryAwait(
+    const [errFindOne, product] = await globalUtils.tryAwait(
       Product.findOne({ where: { id_product: id } })
     );
     if (errFindOne) {

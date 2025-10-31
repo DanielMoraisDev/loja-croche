@@ -5,7 +5,7 @@ import logoPaleta from "../../../../assets/images/logo-header.svg";
 const Navbar = () => {
   return (
     <>
-      <div className="flex flex-row w-full h-full items-center justify-between px-14 py-4 bg-soft_light_yellow ">
+      <div className="flex flex-col md:flex-row gap-4 md:gap-0 w-full h-full items-center justify-between px-14 py-4 bg-soft_light_yellow ">
         <div className="w-[350px] flex flex-col items-center justify-center">
           <img className="w-full " src={logoPaleta} />
         </div>

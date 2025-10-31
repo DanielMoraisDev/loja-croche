@@ -20,7 +20,7 @@ interface PopUpProps {
 const PopUp: FC<PopUpProps> = ({ data, activate, onClose }) => {
   return (
     <aside
-      className={`min-h-[100vh] w-[360px] top-0 right-0 fixed z-[100] overflow-y-scroll max-h-[100vh]
+      className={`min-h-[200vh] w-[360px] top-0 right-0 fixed z-10 overflow-y-scroll max-h-[200vh]
       bg-white border-x-[3px] border-deep_orange shadow-lg
       transition-transform duration-500 ease-in-out
       ${activate ? "translate-x-0" : "translate-x-full"}`}

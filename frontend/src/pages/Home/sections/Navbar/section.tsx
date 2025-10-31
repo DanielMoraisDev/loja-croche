@@ -1,76 +1,60 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
+import { FaBars, FaTimes } from "react-icons/fa";
 import whitePataImg from "../../../../assets/images/pata-white.svg";
 
 const Navbar = () => {
-  const [stuck, setStuck] = useState(false);
-  const sentinelRef = useRef(null);
+  const [open, setOpen] = useState(false);
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setStuck(!entry.isIntersecting);
-      },
-      { threshold: [1] }
-    );
-
-    if (sentinelRef.current) observer.observe(sentinelRef.current);
-    return () => observer.disconnect();
-  }, []);
   return (
     <>
-      <div ref={sentinelRef} className="h-[1px]" />
+      <div className="sticky top-0 z-10 border-t-[3px] border-b-[3px] border-deep_orange bg-warm_peachy_orange transition-all duration-500 ease-in-out">
+        <div className="hidden sm:flex flex-row w-full items-center justify-start px-14 py-5 gap-5">
+          <div className="flex items-center justify-center transition-all duration-300 ease-in-out hover:rotate-[34deg] hover:scale-125 cursor-pointer scale-150">
+            <img
+              className="w-[28px] transition-all duration-300 ease-in-out"
+              src={whitePataImg}
+              alt="Logo Pata Branca"
+            />
+          </div>
 
-      <div
-        className={`sticky top-0 z-50 transition-all duration-500 ease-in-out 
-        ${
-          stuck
-            ? "border-t-[3px] bg-warm_peachy_orange"
-            : "border-t-[3px] border-deep_orange bg-warm_peachy_orange"
-        } border-b-[3px] border-deep_orange`}
-      >
-        {/* Navbar mobile */}
-        <div className="sm:hidden fixed top-0 left-0 w-full bg-warm_peachy_orange border-b-[3px] border-deep_orange z-50 flex items-center justify-start px-6 py-4">
-          <img
-            src={whitePataImg}
-            alt="Logo Pata Branca"
-            className="w-[28px] transition-all duration-300 ease-in-out"
-          />
-        </div>
-
-        {/* Navbar desktop */}
-        <div
-          className={`hidden sm:flex sticky top-0 z-50 transition-all duration-500 ease-in-out 
-  ${
-    stuck
-      ? "border-t-[3px] bg-warm_peachy_orange"
-      : "border-t-[3px] border-deep_orange bg-warm_peachy_orange"
-  } border-b-[3px] border-deep_orange`}
-        >
-          <div className="flex flex-row w-full items-center justify-start px-14 py-5 gap-5">
-            <div
-              className={`flex items-center justify-center transition-all duration-300 ease-in-out hover:rotate-[34deg] hover:scale-125 cursor-pointer ${
-                stuck ? "scale-150" : "scale-100"
-              }`}
-            >
-              <img
-                className="w-[28px] transition-all duration-300 ease-in-out"
-                src={whitePataImg}
-                alt="Logo Pata Branca"
-              />
-            </div>
-
-            <div className="text-soft_light_yellow font-bold text-lg flex flex-row gap-5">
-              {["catálogo", "informações"].map((item, i) => (
-                <p
-                  key={i}
-                  className="hover:text-soft_fresh_green hover:cursor-pointer transition-colors duration-200"
-                >
-                  {item.toUpperCase()}
-                </p>
-              ))}
-            </div>
+          <div className="text-soft_light_yellow font-bold text-lg flex flex-row gap-5">
+            {["catálogo", "informações"].map((item, i) => (
+              <p
+                key={i}
+                className="hover:text-soft_fresh_green hover:cursor-pointer transition-colors duration-200"
+              >
+                {item.toUpperCase()}
+              </p>
+            ))}
           </div>
         </div>
+
+        <div className="flex sm:hidden items-center justify-between px-5 py-4">
+          <img src={whitePataImg} alt="Logo Pata Branca" className="w-7" />
+          <button
+            onClick={() => setOpen(!open)}
+            className="text-soft_light_yellow text-2xl"
+          >
+            {open ? <FaTimes /> : <FaBars />}
+          </button>
+        </div>
+
+        {open && (
+          <div
+            className="absolute left-0 top-full w-full sm:hidden 
+               bg-warm_peachy_orange text-soft_light_yellow font-bold 
+               flex flex-col items-start gap-3 px-5 py-4 border-y-[3px] border-deep_orange"
+          >
+            {["catálogo", "informações"].map((item, i) => (
+              <p
+                key={i}
+                className="hover:text-soft_fresh_green hover:cursor-pointer transition-colors duration-200"
+              >
+                {item.toUpperCase()}
+              </p>
+            ))}
+          </div>
+        )}
       </div>
     </>
   );

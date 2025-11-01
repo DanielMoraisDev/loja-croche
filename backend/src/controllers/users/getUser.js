@@ -1,16 +1,9 @@
 import globalUtils from "../../utils/globalUtils.js";
 import User from "../../models/userSchema.js";
-import globalHelpers from "../../helpers/globalHelpers.js";
 
 export const getUser = async (req, res) => {
   try {
     const id = req.params.id;
-    const token = req.headers.authorization?.split(" ")[1];
-
-    const [errUserToken] = globalUtils.trySync(globalHelpers.authToken(token));
-    if (errUserToken) {
-      console.error("[CONTROLLERS][USERS][GET ONE][AUTH TOKEN]", errUserToken);
-    }
 
     const [errFindOne, user] = await globalUtils.tryAwait(
       User.findOne({ where: { id_user: id } })

@@ -1,4 +1,4 @@
-import User from "../../models/userSchema.js";
+import userModules from "./modules/userModules.js";
 import globalHelpers from "../../helpers/globalHelpers.js";
 import globalUtils from "../../utils/globalUtils.js";
 
@@ -28,12 +28,14 @@ export const createUser = async (req, res) => {
       password: password,
     };
 
-    const [errUser, userCreate] = await globalUtils.tryAwait(User.create(user));
-    if (errUser) {
-      console.error("[CONTROLLERS][USERS][CREATE][CREATE PRODUCT]", errUser);
-      return res
-        .status(500)
-        .json({ error: "Erro ao tentar criar um novo usuário" });
+    const [errCreateUser, userCreate] = await globalUtils.tryAwait(
+      userModules.create(user)
+    );
+    if (errCreateUser) {
+      console.error("[CONTROLLERS][USERS][CREATE][CREATE USER]", errCreateUser);
+      return res.status(500).json({
+        error: "Erro ao tentar criar um novo usuário, " + errCreateUser,
+      });
     }
 
     const userToCreateToken = {

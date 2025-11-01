@@ -1,36 +1,22 @@
-import User from "../../models/userSchema.js";
+import userModules from "./modules/userModules.js";
 import globalUtils from "../../utils/globalUtils.js";
 
 export const loginUser = async (req, res) => {
-  const { email, password } = req.body;
+  try {
+    const { email, password } = req.body;
+    const user = { email, password };
 
-  const [errUser, checkUser] = await globalUtils.tryAwait(
-    User.findOne({
-      where: { email: email, password: password },
-    })
-  );
-  if (errUser) {
-    console.error("[CONTROLLERS][USERS][CREATE][CREATE PRODUCT]", errUser);
-    return res
-      .status(500)
-      .json({ error: "Erro ao tentar criar um novo usuário" });
+    const [errLogin, token] = await globalUtils.tryAwait(
+      userModules.login(user)
+    );
+    if (errLogin) {
+      console.error("[CONTROLLERS][USERS][LOGIN]", errLogin);
+      return res.status(401).json({ error: errLogin.message });
+    }
+
+    return res.status(200).json({ token });
+  } catch (error) {
+    console.error("[CONTROLLERS][USERS][LOGIN] error:", error);
+    return res.status(500).json({ error: "Erro interno do servidor" });
   }
-
-  const userToCreateToken = {
-    email: checkUser.email,
-    password: checkUser.password,
-    id: checkUser.id_user,
-  };
-
-  const [errUserToken, createToken] = globalUtils.trySync(() =>
-    globalHelpers.createToken(userToCreateToken)
-  );
-  if (errUserToken) {
-    console.error("[CONTROLLERS][USERS][CREATE][CREATE TOKEN]", errUserToken);
-    return res
-      .status(500)
-      .json({ error: "Erro ao tentar criar um token para o novo usuário" });
-  }
-
-  return res.json({ token: createToken });
 };

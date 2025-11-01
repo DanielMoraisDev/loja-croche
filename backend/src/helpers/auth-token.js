@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken";
 import configs from "../config.js";
 
 const authToken = (tokenReceived) => {
+  if (!tokenReceived) throw new Error("Token ausente");
   const token = tokenReceived;
 
   const secretKey = configs.auths.token.secret;
@@ -10,12 +11,7 @@ const authToken = (tokenReceived) => {
     const decoded = jwt.verify(token, secretKey);
     return decoded;
   } catch (error) {
-    console.error(
-      "[HELPERS][AUTH TOKEN] Token inválido ou expirado:",
-      error.message
-    );
-
-    return;
+    throw new Error("Token inválido ou expirado");
   }
 };
 

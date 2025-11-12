@@ -9,6 +9,17 @@ interface LoginRegisterProps {
 const LoginRegister: FC<LoginRegisterProps> = ({ activate, onClose }) => {
   const [show, setShow] = useState(activate);
   const [visible, setVisible] = useState(false);
+  type AuthState = "login" | "register";
+  const [state, setState] = useState<AuthState>("login");
+
+  const handleState = () => {
+    if (state == "login") {
+      setState("register");
+      return;
+    }
+
+    setState("login");
+  };
 
   useEffect(() => {
     if (activate) {
@@ -25,8 +36,10 @@ const LoginRegister: FC<LoginRegisterProps> = ({ activate, onClose }) => {
 
   return (
     <aside
-      className={`fixed inset-0 m-auto max-w-[600px] max-h-[700px] z-20
-        bg-white border-[3px] rounded-2xl border-deep_orange shadow-2xl
+      className={`fixed inset-0 m-auto max-w-[500px] ${
+        state == "login" ? "max-h-[460px]" : "max-h-[520px]"
+      } z-20
+        bg-soft_light_yellow border-[3px] rounded-2xl border-deep_orange shadow-2xl
         transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]
         ${
           visible
@@ -34,42 +47,106 @@ const LoginRegister: FC<LoginRegisterProps> = ({ activate, onClose }) => {
             : "translate-y-full opacity-0 scale-95"
         }`}
     >
-      <button
-        type="button"
-        onClick={onClose}
-        className="rounded-xl p-2 absolute top-3 left-3 font-bold border-deep_orange bg-soft_fresh_green text-deep_orange border-[3px] shadow-[0px_3px_0px_0px_rgba(176,_99,_56,_1)] hover:shadow-[0px_1px_0px_0px_rgba(176,_99,_56,_1)] active:shadow-[0px_0px_0px_0px_rgba(176,_99,_56,_1)] hover:top-[14px] active:bg-very_light_saturated_orange"
-      >
-        <X size={32} />
-      </button>
-
-      <div className="flex flex-col items-center text-deep_orange">
-        <div className="w-full flex flex-col gap-4 p-4 px-8">
-          <div className="flex flex-col gap-1 w-full ">
-            <p className="text-warm_peachy_orange text-sm mb-1 font-bold">
-              TESTE
-            </p>
-            <h2 className="text-2xl font-extrabold">TESTE</h2>
-            <p className="text-warm_peachy_orange mb-2">Tamanho: 23131</p>
-            <p className="text-warm_peachy_orange mb-2">Preço: </p>
-            <p className="text-deep_orange text-2xl font-bold">R$ 12.00</p>
-          </div>
-          <div className="flex flex-col w-full gap-3">
-            <button className="relative rounded-xl px-9 p-3 w-full font-bold border-deep_orange bg-soft_fresh_green text-deep_orange border-[3px] shadow-[0px_3px_0px_0px_rgba(176,_99,_56,_1)] hover:shadow-[0px_1px_0px_0px_rgba(176,_99,_56,_1)] active:shadow-[0px_0px_0px_0px_rgba(176,_99,_56,_1)] hover:top-[1px] active:bg-very_light_saturated_orange">
-              <p className="text-lg">{"pedir agora".toUpperCase()}</p>
-            </button>
-            <button className="flex flex-row justify-center items-center rounded-xl  w-full font-bold border-deep_orange bg-soft_fresh_green text-deep_orange border-[3px] shadow-[0px_3px_0px_0px_rgba(176,_99,_56,_1)] hover:shadow-[0px_1px_0px_0px_rgba(176,_99,_56,_1)] active:shadow-[0px_0px_0px_0px_rgba(176,_99,_56,_1)] hover:top-[1px] active:bg-very_light_saturated_orange">
-              <div className="flex flex-col bg-warm_peachy_orange p-3 rounded-lg">
-                <ShoppingCart size={32} className="text-soft_fresh_green" />
-              </div>
-              <div>
-                <p className="text-lg">
-                  {"adicionar ao carrinho".toUpperCase()}
-                </p>
-              </div>
-            </button>
-          </div>
-        </div>
+      <div>
+        <button
+          type="button"
+          onClick={onClose}
+          className="absolute top-6 left-6 z-50 rounded-xl  p-2 flex font-bold border-deep_orange bg-soft_fresh_green text-deep_orange border-[3px] shadow-[0px_3px_0px_0px_rgba(176,_99,_56,_1)] hover:shadow-[0px_1px_0px_0px_rgba(176,_99,_56,_1)] active:shadow-[0px_0px_0px_0px_rgba(176,_99,_56,_1)] hover:top-[26px] active:bg-very_light_saturated_orange"
+        >
+          <X size={32} />
+        </button>
       </div>
+
+      <div className="z-40 absolute top-0 p-9 left-0 w-full justify-center">
+        <h2 className="font-bold text-2xl text-center text-deep_orange ">
+          {state == "login" ? "Entre na sua conta" : "Registre sua conta"}
+        </h2>{" "}
+      </div>
+
+      {state == "login" ? (
+        <div className="flex mt-24 flex-col items-center text-deep_orange gap-4">
+          <div className="w-full flex flex-col gap-4 p-4 px-8">
+            <div className="flex flex-col gap-2">
+              <label className="block text-md font-semibold text-heading">
+                Email:
+              </label>
+              <input
+                type="text"
+                className="focus:outline-none  border-4 text-heading text-md rounded-xl border-warm_peachy_orange focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body"
+                placeholder="Digite seu email..."
+                required
+              />
+            </div>
+            <div className="flex flex-col gap-2">
+              <label className="block text-md font-semibold text-heading">
+                Senha:
+              </label>
+              <input
+                type="text"
+                className="focus:outline-none  border-4 text-heading text-md rounded-xl border-warm_peachy_orange focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body"
+                placeholder="Digite sua senha..."
+                required
+              />
+            </div>
+          </div>
+          <p>
+            Ainda não possui uma conta?{" "}
+            <a
+              onClick={() => handleState()}
+              className="text-md font-bold hover:text-warm_peachy_orange hover:cursor-pointer transition-colors duration-200"
+            >
+              Registrar-se agora
+            </a>
+          </p>
+        </div>
+      ) : (
+        <div className="flex mt-24 flex-col items-center text-deep_orange gap-4">
+          <div className="w-full flex flex-col gap-4 p-4 px-8">
+            <div className="flex flex-col gap-2">
+              <label className="block text-md font-semibold text-heading">
+                Nome:
+              </label>
+              <input
+                type="text"
+                className="focus:outline-none  border-4 text-heading text-md rounded-xl border-warm_peachy_orange focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body"
+                placeholder="Digite seu nome..."
+                required
+              />
+            </div>
+            <div className="flex flex-col gap-2">
+              <label className="block text-md font-semibold text-heading">
+                Email:
+              </label>
+              <input
+                type="text"
+                className="focus:outline-none  border-4 text-heading text-md rounded-xl border-warm_peachy_orange focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body"
+                placeholder="Digite seu email..."
+                required
+              />
+            </div>
+            <div className="flex flex-col gap-2">
+              <label className="block text-md font-semibold text-heading">
+                Senha:
+              </label>
+              <input
+                type="text"
+                className="focus:outline-none  border-4 text-heading text-md rounded-xl border-warm_peachy_orange focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body"
+                placeholder="Digite sua senha..."
+                required
+              />
+            </div>
+          </div>
+          <p>
+            Já possui uma conta?{" "}
+            <a
+              onClick={() => handleState()}
+              className="text-md font-bold hover:text-warm_peachy_orange hover:cursor-pointer transition-colors duration-200"
+            >
+              Entrar agora
+            </a>
+          </p>
+        </div>
+      )}
     </aside>
   );
 };

@@ -1,21 +1,9 @@
 import { useState } from "react";
 import { FaBars, FaTimes } from "react-icons/fa";
 import whitePataImg from "../../../../assets/images/pata-white.svg";
-import { ShoppingCart } from "lucide-react";
-import LoginRegister from "../LoginRegister/section";
 
 const Navbar = () => {
-  const [isLoginRegisterActive, setIsLoginRegisterActive] = useState(false);
   const [open, setOpen] = useState(false);
-
-  const handleOpen = () => {
-    setIsLoginRegisterActive(true);
-  };
-
-  const handleClose = () => {
-    setIsLoginRegisterActive(false);
-  };
-
   return (
     <>
       <div className="sticky top-0 z-10 border-t-[3px] border-b-[3px] border-deep_orange bg-warm_peachy_orange transition-all duration-500 ease-in-out">
@@ -40,22 +28,6 @@ const Navbar = () => {
               ))}
             </div>
           </div>
-          <div className="hidden sm:flex flex-row gap-8">
-            <button className="flex flex-row justify-center items-center rounded-xl  w-full font-bold border-deep_orange bg-soft_fresh_green text-deep_orange border-[3px] shadow-[0px_3px_0px_0px_rgba(176,_99,_56,_1)] hover:shadow-[0px_1px_0px_0px_rgba(176,_99,_56,_1)] active:shadow-[0px_0px_0px_0px_rgba(176,_99,_56,_1)] hover:top-[1px] active:bg-very_light_saturated_orange">
-              <div className="flex flex-col bg-warm_peachy_orange p-2 rounded-lg">
-                <ShoppingCart size={32} className="text-soft_fresh_green" />
-              </div>
-              <div className="w-full flex flex-row whitespace-nowrap px-3">
-                <p className="text-lg">{"ver carrinho".toUpperCase()}</p>
-              </div>
-            </button>
-            <button
-              onClick={() => handleOpen()}
-              className="relative rounded-full px-9 p-2  font-bold border-deep_orange bg-soft_fresh_green text-deep_orange border-[3px] shadow-[0px_3px_0px_0px_rgba(176,_99,_56,_1)] hover:shadow-[0px_1px_0px_0px_rgba(176,_99,_56,_1)] active:shadow-[0px_0px_0px_0px_rgba(176,_99,_56,_1)] hover:top-[1px] active:bg-very_light_saturated_orange"
-            >
-              <p className="text-lg">{"entrar".toUpperCase()}</p>
-            </button>
-          </div>
         </div>
 
         <div className="flex sm:hidden items-center justify-between px-5 py-4">
@@ -74,22 +46,6 @@ const Navbar = () => {
                bg-warm_peachy_orange text-soft_light_yellow font-bold 
                flex flex-col items-start gap-3 px-5 py-4 border-y-[3px] border-deep_orange"
           >
-            <div className="flex sm:hidden flex-row gap-8">
-              <button className="flex flex-row justify-center items-center rounded-xl  w-full font-bold border-deep_orange bg-soft_fresh_green text-deep_orange border-[3px] shadow-[0px_3px_0px_0px_rgba(176,_99,_56,_1)] hover:shadow-[0px_1px_0px_0px_rgba(176,_99,_56,_1)] active:shadow-[0px_0px_0px_0px_rgba(176,_99,_56,_1)] hover:top-[1px] active:bg-very_light_saturated_orange">
-                <div className="flex flex-col bg-warm_peachy_orange p-2 rounded-lg">
-                  <ShoppingCart size={32} className="text-soft_fresh_green" />
-                </div>
-                <div className="w-full flex flex-row whitespace-nowrap px-3">
-                  <p className="text-lg">{"ver carrinho".toUpperCase()}</p>
-                </div>
-              </button>
-              <button
-                onClick={() => handleOpen()}
-                className="relative rounded-full px-9 p-2  font-bold border-deep_orange bg-soft_fresh_green text-deep_orange border-[3px] shadow-[0px_3px_0px_0px_rgba(176,_99,_56,_1)] hover:shadow-[0px_1px_0px_0px_rgba(176,_99,_56,_1)] active:shadow-[0px_0px_0px_0px_rgba(176,_99,_56,_1)] hover:top-[1px] active:bg-very_light_saturated_orange"
-              >
-                <p className="text-lg">{"entrar".toUpperCase()}</p>
-              </button>
-            </div>
             {["catálogo", "informações"].map((item, i) => (
               <p
                 key={i}
@@ -101,8 +57,6 @@ const Navbar = () => {
           </div>
         )}
       </div>
-
-      <LoginRegister activate={isLoginRegisterActive} onClose={handleClose} />
     </>
   );
 };

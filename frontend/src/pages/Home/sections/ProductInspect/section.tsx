@@ -11,13 +11,17 @@ interface Product {
   image_object_name: string;
 }
 
-interface PopUpProps {
+interface ProductInspectProps {
   data?: Product;
   activate: boolean;
   onClose: () => void;
 }
 
-const PopUp: FC<PopUpProps> = ({ data, activate, onClose }) => {
+const ProductInspect: FC<ProductInspectProps> = ({
+  data,
+  activate,
+  onClose,
+}) => {
   return (
     <aside
       className={`min-h-[200vh] w-[360px] top-0 right-0 fixed z-10 overflow-y-scroll max-h-[200vh]
@@ -76,4 +80,4 @@ const PopUp: FC<PopUpProps> = ({ data, activate, onClose }) => {
   );
 };
 
-export default PopUp;
+export default ProductInspect;

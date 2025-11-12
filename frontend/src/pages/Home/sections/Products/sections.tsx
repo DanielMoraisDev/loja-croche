@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import PopUp from "../PopUp/section";
+import ProductInspect from "../ProductInspect/section";
 import configs from "../../../../config";
 import { ShoppingCart } from "lucide-react";
 import useWindowSize from "../../../../utils/useWindowSize";
@@ -20,7 +20,7 @@ const port = configs.hosts.backend_api.port;
 
 const Products = () => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const [isPopupActive, setIsPopupActive] = useState(false);
+  const [isProductInspectActive, setIsProductInspectActive] = useState(false);
   const [dataReceived, setDataReceived] = useState<Product[]>();
   const { width, height } = useWindowSize();
   const [widthReceived, setWidthReceived] = useState<number>(width);
@@ -37,11 +37,11 @@ const Products = () => {
 
   const handleOpen = (product: Product) => {
     setSelectedProduct(product);
-    setIsPopupActive(true);
+    setIsProductInspectActive(true);
   };
 
   const handleClose = () => {
-    setIsPopupActive(false);
+    setIsProductInspectActive(false);
   };
 
   return (
@@ -91,9 +91,9 @@ const Products = () => {
           ))}
         </div>
       </div>
-      <PopUp
+      <ProductInspect
         data={selectedProduct || undefined}
-        activate={isPopupActive}
+        activate={isProductInspectActive}
         onClose={handleClose}
       />
     </>

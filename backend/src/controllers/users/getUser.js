@@ -3,7 +3,7 @@ import User from "../../models/userSchema.js";
 
 export const getUser = async (req, res) => {
   try {
-    const id = req.params.id;
+    const id = req.user.id;
 
     const [errFindOne, user] = await globalUtils.tryAwait(
       User.findOne({ where: { id_user: id } })

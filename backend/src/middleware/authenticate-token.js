@@ -11,12 +11,18 @@ export const authenticateToken = async (req, res, next) => {
     const secretKey = configs.auths.token.secret;
 
     jwt.verify(token, secretKey, (err, decoded) => {
-      if (err) return res.send(err);
-      req.user = decoded;
+      if (err) {
+        console.error("[MIDDLEWARES][INVALID TOKEN]");
+        return res.status(500).json({ error: "Token invalido" });
+      }
+
+      req.user = {
+        id: decoded.id,
+      };
+
+      console.log("[MIDDLEWARES][AUTHENTICATE TOKEN] Sucesso: logado");
       next();
     });
-
-    console.log("[MIDDLEWARES][AUTHENTICATE TOKEN] Sucesso: logado");
   } catch (error) {
     console.error("[MIDDLEWARES][AUTHENTICATE TOKEN] Error: " + error);
     return res.status(401).json({ error: "Token expirado ou inválido" });

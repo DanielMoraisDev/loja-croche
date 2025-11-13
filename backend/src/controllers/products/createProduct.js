@@ -45,7 +45,7 @@ export const createProduct = async (req, res) => {
 
     const [errUpload] = await globalUtils.tryAwait(
       minioClient.putObject(
-        bucket_name,
+        bucketName,
         objectName,
         foto_produto.buffer,
         foto_produto.size,

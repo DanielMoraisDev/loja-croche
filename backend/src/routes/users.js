@@ -13,18 +13,14 @@ usersRouter.route("/login").post((req, res) => {
   return userController.login(req, res);
 });
 
-usersRouter
-  .route("/:id")
-  .get(globalMiddlewares.authToken, userController.getOne);
+usersRouter.route("/").get(globalMiddlewares.authToken, userController.getOne);
 
-usersRouter
-  .route("/:id")
-  .put(globalMiddlewares.authToken, userController.update);
+usersRouter.route("/").put(globalMiddlewares.authToken, userController.update);
 
 usersRouter.route("/").get(globalMiddlewares.authToken, userController.getAll);
 
 usersRouter
-  .route("/:id")
+  .route("/")
   .delete(globalMiddlewares.authToken, userController.delete);
 
 export default usersRouter;

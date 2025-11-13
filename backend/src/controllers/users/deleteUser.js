@@ -3,7 +3,7 @@ import User from "../../models/userSchema.js";
 
 export const deleteUser = async (req, res) => {
   try {
-    const id = req.params.id;
+    const id = req.user.id;
 
     const existingUser = await User.findByPk(id);
 

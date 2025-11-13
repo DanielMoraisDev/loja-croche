@@ -3,7 +3,7 @@ import User from "../../models/userSchema.js";
 
 export const updateUser = async (req, res) => {
   try {
-    const id = req.params.id;
+    const id = req.user.id;
     const { name, email, password } = req.body;
 
     const existingUser = await User.findByPk(id);

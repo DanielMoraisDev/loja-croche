@@ -7,10 +7,10 @@ const login = async (userData) => {
   const { email, password } = userData;
 
   const userFound = await User.findOne({ where: { email: email } });
-  if (!userFound) throw new Error("Usuário não encontrado");
+  if (!userFound) throw new Error("Email não cadastrado");
 
   const isPasswordValid = await bcrypt.compare(password, userFound.password);
-  if (!isPasswordValid) throw new Error("Senha incorreta");
+  if (!isPasswordValid) throw new Error("Algum dos campos não está correto");
 
   const userToCreateToken = {
     email: userFound.email,

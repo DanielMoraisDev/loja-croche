@@ -1,7 +1,7 @@
 import conn from "../db/postgres.js";
 import { DataTypes } from "sequelize";
 
-const table_mysql = "products";
+export const table_mysql = "products";
 
 const Product = conn.define(
   table_mysql,

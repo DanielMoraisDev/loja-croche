@@ -1,6 +1,6 @@
-import { X } from "lucide-react";
+import { Eye, EyeOff, X } from "lucide-react";
 import Cookies from "universal-cookie";
-import { useEffect, useState, type FC } from "react";
+import { useState, type FC } from "react";
 import axios from "axios";
 import configs from "../../../../config";
 
@@ -14,10 +14,11 @@ interface LoginRegisterProps {
 
 const LoginRegister: FC<LoginRegisterProps> = ({ activate, onClose }) => {
   const cookies = new Cookies();
-  const [show, setShow] = useState(activate);
-  const [visible, setVisible] = useState(false);
   type AuthState = "login" | "register";
   const [state, setState] = useState<AuthState>("register");
+  const [passwordShow, setPasswordShow] = useState<boolean>(false);
+  const [confirmPasswordShow, setConfirmPasswordShow] =
+    useState<boolean>(false);
 
   const handleState = () => {
     if (state == "login") {
@@ -27,19 +28,6 @@ const LoginRegister: FC<LoginRegisterProps> = ({ activate, onClose }) => {
 
     setState("login");
   };
-
-  useEffect(() => {
-    if (activate) {
-      setShow(true);
-      setTimeout(() => setVisible(true), 10);
-    } else {
-      setVisible(false);
-      const timer = setTimeout(() => setShow(false), 500);
-      return () => clearTimeout(timer);
-    }
-  }, [activate]);
-
-  if (!show) return null;
 
   const [name, setName] = useState<string | null>(null);
   const [email, setEmail] = useState<string | null>(null);
@@ -129,7 +117,9 @@ const LoginRegister: FC<LoginRegisterProps> = ({ activate, onClose }) => {
 
       if (token) {
         cookies.set("jwt_authorization", token);
-        window.location.reload();
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
       }
     } catch (error: any) {
       const msg =
@@ -149,14 +139,14 @@ const LoginRegister: FC<LoginRegisterProps> = ({ activate, onClose }) => {
     <div
       className={`fixed inset-0 z-20 bg-black/30 flex justify-center items-center
     transition-opacity duration-500 ${
-      visible ? "opacity-100" : "opacity-0 pointer-events-none"
+      activate ? "opacity-100" : "opacity-0 pointer-events-none"
     }`}
     >
       <aside
         className={`relative w-full max-w-[500px] bg-soft_light_yellow
       border-[3px] rounded-2xl border-deep_orange shadow-2xl
       transition-transform duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]
-      ${visible ? "translate-y-0 scale-100" : "translate-y-12 scale-95"}
+      ${activate ? "translate-y-0 scale-100" : "translate-y-12 scale-95"}
       overflow-y-auto max-h-[90vh]`}
       >
         <div>
@@ -183,8 +173,8 @@ const LoginRegister: FC<LoginRegisterProps> = ({ activate, onClose }) => {
                   Email:
                 </label>
                 <input
-                  type="text"
-                  onBlur={(e) => setEmail(e.target.value)}
+                  type="email"
+                  onChange={(e) => setEmail(e.target.value)}
                   className="focus:outline-none  border-4 text-heading text-md rounded-xl border-warm_peachy_orange focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body"
                   placeholder="Digite seu email..."
                   required
@@ -201,13 +191,26 @@ const LoginRegister: FC<LoginRegisterProps> = ({ activate, onClose }) => {
                 <label className="block text-md font-semibold text-heading">
                   Senha:
                 </label>
-                <input
-                  type="text"
-                  onBlur={(e) => setPassword(e.target.value)}
-                  className="focus:outline-none  border-4 text-heading text-md rounded-xl border-warm_peachy_orange focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body"
-                  placeholder="Digite sua senha..."
-                  required
-                />
+                <div className="w-full relative">
+                  {passwordShow ? (
+                    <EyeOff
+                      onClick={() => setPasswordShow(!passwordShow)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer "
+                    />
+                  ) : (
+                    <Eye
+                      onClick={() => setPasswordShow(!passwordShow)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer "
+                    />
+                  )}
+                  <input
+                    type={passwordShow ? "text" : "password"}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="focus:outline-none  border-4 text-heading text-md rounded-xl border-warm_peachy_orange focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body"
+                    placeholder="Digite sua senha..."
+                    required
+                  />
+                </div>
                 <span
                   className={`${
                     errors.password ? "block" : "hidden"
@@ -251,7 +254,7 @@ const LoginRegister: FC<LoginRegisterProps> = ({ activate, onClose }) => {
                 </label>
                 <input
                   type="text"
-                  onBlur={(e) => setName(e.target.value)}
+                  onChange={(e) => setName(e.target.value)}
                   className="focus:outline-none  border-4 text-heading text-md rounded-xl border-warm_peachy_orange focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body"
                   placeholder="Digite seu nome..."
                   required
@@ -269,8 +272,8 @@ const LoginRegister: FC<LoginRegisterProps> = ({ activate, onClose }) => {
                   Email:
                 </label>
                 <input
-                  type="text"
-                  onBlur={(e) => setEmail(e.target.value)}
+                  type="email"
+                  onChange={(e) => setEmail(e.target.value)}
                   className="focus:outline-none  border-4 text-heading text-md rounded-xl border-warm_peachy_orange focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body"
                   placeholder="Digite seu email..."
                   required
@@ -287,13 +290,26 @@ const LoginRegister: FC<LoginRegisterProps> = ({ activate, onClose }) => {
                 <label className="block text-md font-semibold text-heading">
                   Senha:
                 </label>
-                <input
-                  type="text"
-                  onBlur={(e) => setPassword(e.target.value)}
-                  className="focus:outline-none  border-4 text-heading text-md rounded-xl border-warm_peachy_orange focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body"
-                  placeholder="Digite sua senha..."
-                  required
-                />
+                <div className="w-full relative">
+                  {passwordShow ? (
+                    <EyeOff
+                      onClick={() => setPasswordShow(!passwordShow)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer "
+                    />
+                  ) : (
+                    <Eye
+                      onClick={() => setPasswordShow(!passwordShow)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer "
+                    />
+                  )}
+                  <input
+                    type={passwordShow ? "text" : "password"}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="focus:outline-none  border-4 text-heading text-md rounded-xl border-warm_peachy_orange focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body"
+                    placeholder="Digite sua senha..."
+                    required
+                  />
+                </div>
                 <span
                   className={`${
                     errors.password ? "block" : "hidden"
@@ -306,13 +322,30 @@ const LoginRegister: FC<LoginRegisterProps> = ({ activate, onClose }) => {
                 <label className="block text-md font-semibold text-heading">
                   Confirme sua senha:
                 </label>
-                <input
-                  type="text"
-                  onBlur={(e) => setConfirmPassword(e.target.value)}
-                  className="focus:outline-none  border-4 text-heading text-md rounded-xl border-warm_peachy_orange focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body"
-                  placeholder="Digite novamente a mesma senha..."
-                  required
-                />
+                <div className="w-full relative">
+                  {confirmPasswordShow ? (
+                    <EyeOff
+                      onClick={() =>
+                        setConfirmPasswordShow(!confirmPasswordShow)
+                      }
+                      className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer "
+                    />
+                  ) : (
+                    <Eye
+                      onClick={() =>
+                        setConfirmPasswordShow(!confirmPasswordShow)
+                      }
+                      className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer "
+                    />
+                  )}
+                  <input
+                    type={confirmPasswordShow ? "text" : "password"}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className="focus:outline-none  border-4 text-heading text-md rounded-xl border-warm_peachy_orange focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body"
+                    placeholder="Digite novamente a mesma senha..."
+                    required
+                  />
+                </div>
                 <span
                   className={`${
                     errors.confirmPassword ? "block" : "hidden"

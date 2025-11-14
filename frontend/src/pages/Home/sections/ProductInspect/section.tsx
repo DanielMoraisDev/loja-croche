@@ -1,5 +1,8 @@
 import { ShoppingCart, X } from "lucide-react";
-import { type FC } from "react";
+import { useEffect, useState, type FC } from "react";
+import useWindowSize from "../../../../utils/useWindowSize";
+import axios from "axios";
+import configs from "../../../../config";
 
 interface Product {
   id_product: string;
@@ -9,22 +12,68 @@ interface Product {
   type: string;
   image_url: string;
   image_object_name: string;
+  addedInCart: boolean;
 }
 
 interface ProductInspectProps {
   data?: Product;
   activate: boolean;
   onClose: () => void;
+  userToken: string | null;
 }
+
+const host = configs.hosts.backend_api.host;
+const port = configs.hosts.backend_api.port;
 
 const ProductInspect: FC<ProductInspectProps> = ({
   data,
   activate,
   onClose,
+  userToken,
 }) => {
+  const { width, height } = useWindowSize();
+  const [widthReceived, setWidthReceived] = useState<number>(width);
+  useEffect(() => {
+    setWidthReceived(width);
+  }, [width, height]);
+
+  const handleAddOnCardItems = async (product: Product) => {
+    try {
+      await axios.post(
+        `http://${host}:${port}/api/cart_item`,
+        {
+          id_product: product.id_product,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+    } catch (error: any) {
+      console.log("Error ao tentar adicionar item ao carrinho");
+    }
+  };
+
+  const handleRemoveOfCardItems = async (product: Product) => {
+    try {
+      await axios.delete(
+        `http://${host}:${port}/api/cart_item/${product.id_product}`,
+        {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+    } catch (error: any) {
+      console.log("Error ao tentar remover item ao carrinho");
+    }
+  };
   return (
     <aside
-      className={`min-h-[200vh] w-[360px] top-0 right-0 fixed z-10 overflow-y-scroll max-h-[200vh]
+      className={`h-screen w-[360px] top-0 right-0 fixed z-10 overflow-y-scroll
       bg-white border-x-[3px] border-deep_orange shadow-lg
       transition-transform duration-500 ease-in-out
       ${activate ? "translate-x-0" : "translate-x-full"}`}
@@ -58,19 +107,26 @@ const ProductInspect: FC<ProductInspectProps> = ({
                 R$ {data.price}
               </p>
             </div>
-            <div className="flex flex-col w-full gap-3">
-              <button className="relative rounded-xl px-9 p-3 w-full font-bold border-deep_orange bg-soft_fresh_green text-deep_orange border-[3px] shadow-[0px_3px_0px_0px_rgba(176,_99,_56,_1)] hover:shadow-[0px_1px_0px_0px_rgba(176,_99,_56,_1)] active:shadow-[0px_0px_0px_0px_rgba(176,_99,_56,_1)] hover:top-[1px] active:bg-very_light_saturated_orange">
+            <div className="flex flex-col 2xl:flex-row gap-2">
+              <button className="relative rounded-xl py-3 px-3  w-full font-bold border-deep_orange bg-soft_fresh_green text-deep_orange border-[3px] shadow-[0px_3px_0px_0px_rgba(176,_99,_56,_1)] hover:shadow-[0px_1px_0px_0px_rgba(176,_99,_56,_1)] active:shadow-[0px_0px_0px_0px_rgba(176,_99,_56,_1)] hover:top-[1px] active:bg-very_light_saturated_orange">
                 <p className="text-lg">{"pedir agora".toUpperCase()}</p>
               </button>
-              <button className="flex flex-row justify-center items-center rounded-xl  w-full font-bold border-deep_orange bg-soft_fresh_green text-deep_orange border-[3px] shadow-[0px_3px_0px_0px_rgba(176,_99,_56,_1)] hover:shadow-[0px_1px_0px_0px_rgba(176,_99,_56,_1)] active:shadow-[0px_0px_0px_0px_rgba(176,_99,_56,_1)] hover:top-[1px] active:bg-very_light_saturated_orange">
-                <div className="flex flex-col bg-warm_peachy_orange p-3 rounded-lg">
-                  <ShoppingCart size={32} className="text-soft_fresh_green" />
-                </div>
-                <div>
-                  <p className="text-lg">
-                    {"adicionar ao carrinho".toUpperCase()}
-                  </p>
-                </div>
+              <button
+                onClick={
+                  data?.addedInCart
+                    ? () => handleRemoveOfCardItems(data)
+                    : () => handleAddOnCardItems(data)
+                }
+                className="flex flex-row gap-4 justify-center items-center rounded-xl p-2.5 2xl:p-3 font-bold border-deep_orange bg-soft_fresh_green text-deep_orange border-[3px] shadow-[0px_3px_0px_0px_rgba(176,_99,_56,_1)] hover:shadow-[0px_1px_0px_0px_rgba(176,_99,_56,_1)] active:shadow-[0px_0px_0px_0px_rgba(176,_99,_56,_1)] hover:top-[1px] active:bg-very_light_saturated_orange"
+              >
+                <ShoppingCart size={32} />
+                <p
+                  className={`font-bold ${
+                    widthReceived <= 1536 ? "flex" : "hidden"
+                  }`}
+                >
+                  {"Adicionar".toUpperCase()}
+                </p>
               </button>
             </div>
           </div>

@@ -2,8 +2,10 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import ProductInspect from "../ProductInspect/section";
 import configs from "../../../../config";
-import { ShoppingCart } from "lucide-react";
+import { ShoppingCart, Trash2 } from "lucide-react";
 import useWindowSize from "../../../../utils/useWindowSize";
+import Cookies from "universal-cookie";
+import LoginRegister from "../LoginRegister/section";
 
 interface Product {
   id_product: string;
@@ -13,6 +15,7 @@ interface Product {
   type: string;
   image_url: string;
   image_object_name: string;
+  addedInCart: boolean;
 }
 
 const host = configs.hosts.backend_api.host;
@@ -24,24 +27,112 @@ const Products = () => {
   const [dataReceived, setDataReceived] = useState<Product[]>();
   const { width, height } = useWindowSize();
   const [widthReceived, setWidthReceived] = useState<number>(width);
+  const cookies = new Cookies();
+  const [userToken, setUserToken] = useState<string | null>(null);
+  const [isLogged, setIsLogged] = useState<boolean>(false);
+  const [isLoginRegisterActive, setIsLoginRegisterActive] = useState(false);
+
+  useEffect(() => {
+    const token = cookies.get("jwt_authorization");
+    if (token) {
+      setUserToken(token);
+      console.log(token);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (userToken) {
+      setIsLogged(true);
+    }
+  }, [userToken]);
 
   useEffect(() => {
     setWidthReceived(width);
   }, [width, height]);
 
-  useEffect(() => {
-    axios.get(`http://${host}:${port}/api/products/`).then(function (response) {
-      setDataReceived(response.data);
-    });
-  }, []);
+  const getAllProducts = async () => {
+    if (userToken) {
+      await axios
+        .get(`http://${host}:${port}/api/products/`, {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+            "Content-Type": "application/json",
+          },
+        })
+        .then(function (response) {
+          setDataReceived(response.data);
+          console.log();
+        });
+      return;
+    }
+    await axios
+      .get(`http://${host}:${port}/api/products/`)
+      .then(function (response) {
+        setDataReceived(response.data);
+      });
+  };
 
-  const handleOpen = (product: Product) => {
+  useEffect(() => {
+    getAllProducts();
+  }, [userToken]);
+
+  useEffect(() => {
+    console.log(dataReceived);
+  }, [dataReceived]);
+
+  const handleOpenProductInspect = (product: Product) => {
     setSelectedProduct(product);
     setIsProductInspectActive(true);
   };
 
-  const handleClose = () => {
+  const handleCloseProductInspect = () => {
     setIsProductInspectActive(false);
+    getAllProducts();
+  };
+
+  const handleAddOnCardItems = async (product: Product) => {
+    if (!isLogged) return setIsLoginRegisterActive(true);
+
+    try {
+      await axios.post(
+        `http://${host}:${port}/api/cart_item`,
+        {
+          id_product: product.id_product,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      getAllProducts();
+    } catch (error: any) {
+      console.log("Error ao tentar adicionar item ao carrinho");
+    }
+  };
+
+  const handleCloseLoginRegister = () => {
+    setIsLoginRegisterActive(false);
+  };
+
+  const handleRemoveOfCardItems = async (product: Product) => {
+    try {
+      await axios.delete(
+        `http://${host}:${port}/api/cart_item/${product.id_product}`,
+        {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      getAllProducts();
+    } catch (error: any) {
+      console.log("Error ao tentar remover item ao carrinho");
+    }
   };
 
   return (
@@ -67,22 +158,42 @@ const Products = () => {
                   </p>
                   <p className="text-deep_orange text-xl">{product.name}</p>
                   <p className="text-warm_peachy_orange">R${product.price}</p>
+                  <p className="text-warm_peachy_orange">
+                    {product.addedInCart}
+                  </p>
                 </div>
                 <div className="flex flex-col 2xl:flex-row gap-2">
                   <button
-                    onClick={() => handleOpen(product)}
+                    onClick={() => handleOpenProductInspect(product)}
                     className="relative rounded-xl py-3 px-3  w-full font-bold border-deep_orange bg-soft_fresh_green text-deep_orange border-[3px] shadow-[0px_3px_0px_0px_rgba(176,_99,_56,_1)] hover:shadow-[0px_1px_0px_0px_rgba(176,_99,_56,_1)] active:shadow-[0px_0px_0px_0px_rgba(176,_99,_56,_1)] hover:top-[1px] active:bg-very_light_saturated_orange"
                   >
                     <p className="text-lg">{"saiba mais".toUpperCase()}</p>
                   </button>
-                  <button className="flex flex-row gap-4 justify-center items-center rounded-xl p-2.5 2xl:p-3 font-bold border-deep_orange bg-soft_fresh_green text-deep_orange border-[3px] shadow-[0px_3px_0px_0px_rgba(176,_99,_56,_1)] hover:shadow-[0px_1px_0px_0px_rgba(176,_99,_56,_1)] active:shadow-[0px_0px_0px_0px_rgba(176,_99,_56,_1)] hover:top-[1px] active:bg-very_light_saturated_orange">
-                    <ShoppingCart size={32} />
+                  <button
+                    onClick={
+                      product?.addedInCart
+                        ? () => handleRemoveOfCardItems(product)
+                        : () => handleAddOnCardItems(product)
+                    }
+                    className={`flex flex-row gap-4 justify-center items-center rounded-xl p-2.5 2xl:p-3 font-bold border-deep_orange bg-soft_fresh_green text-deep_orange border-[3px] shadow-[0px_3px_0px_0px_rgba(176,_99,_56,_1)] hover:shadow-[0px_1px_0px_0px_rgba(176,_99,_56,_1)] active:shadow-[0px_0px_0px_0px_rgba(176,_99,_56,_1)] hover:top-[1px] active:bg-very_light_saturated_orange ${
+                      product?.addedInCart == true
+                        ? "text-white !bg-red-400 "
+                        : null
+                    }`}
+                  >
+                    {product?.addedInCart ? (
+                      <Trash2 size={32} />
+                    ) : (
+                      <ShoppingCart size={32} />
+                    )}
                     <p
                       className={`font-bold ${
                         widthReceived <= 1536 ? "flex" : "hidden"
                       }`}
                     >
-                      {"Adicionar".toUpperCase()}
+                      {product?.addedInCart
+                        ? "Remover".toUpperCase()
+                        : "Adicionar".toUpperCase()}
                     </p>
                   </button>
                 </div>
@@ -94,7 +205,12 @@ const Products = () => {
       <ProductInspect
         data={selectedProduct || undefined}
         activate={isProductInspectActive}
-        onClose={handleClose}
+        onClose={handleCloseProductInspect}
+        userToken={userToken}
+      />
+      <LoginRegister
+        activate={isLoginRegisterActive}
+        onClose={handleCloseLoginRegister}
       />
     </>
   );

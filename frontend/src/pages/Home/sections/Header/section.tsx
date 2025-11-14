@@ -3,11 +3,13 @@ import { ShoppingCart } from "lucide-react";
 import { useEffect, useState } from "react";
 import Cookies from "universal-cookie";
 import LoginRegister from "../LoginRegister/section";
+import CartItems from "../CartItems/section";
 
 const Header = () => {
   const cookies = new Cookies();
   const [userToken, setUserToken] = useState<string | null>(null);
   const [isLogged, setIsLogged] = useState<boolean>(false);
+  const [isCardItemsActive, setIsCardItemsActive] = useState<boolean>(false);
 
   useEffect(() => {
     const token = cookies.get("jwt_authorization");
@@ -24,18 +26,29 @@ const Header = () => {
 
   const [isLoginRegisterActive, setIsLoginRegisterActive] = useState(false);
 
-  const handleOpen = () => {
+  const handleOpenLoginRegister = () => {
     setIsLoginRegisterActive(true);
   };
 
-  const handleClose = () => {
+  const handleCloseLoginRegister = () => {
     setIsLoginRegisterActive(false);
+  };
+
+  const handleOpenCardItems = () => {
+    if (!isLogged) return setIsLoginRegisterActive(true);
+
+    setIsCardItemsActive(true);
+  };
+
+  const handleCloseCardItems = () => {
+    setIsCardItemsActive(false);
   };
 
   const logout = () => {
     cookies.remove("jwt_authorization");
     setUserToken(null);
     setIsLogged(false);
+    window.location.reload();
   };
 
   return (
@@ -46,7 +59,10 @@ const Header = () => {
         </div>
         <div className="flex flex-row gap-6">
           <div className="flex flex-row gap-8">
-            <button className="flex flex-row justify-center items-center rounded-xl  w-full font-bold border-deep_orange bg-soft_fresh_green text-deep_orange border-[3px] shadow-[0px_3px_0px_0px_rgba(176,_99,_56,_1)] hover:shadow-[0px_1px_0px_0px_rgba(176,_99,_56,_1)] active:shadow-[0px_0px_0px_0px_rgba(176,_99,_56,_1)] hover:top-[1px] active:bg-very_light_saturated_orange">
+            <button
+              onClick={() => handleOpenCardItems()}
+              className="flex flex-row justify-center items-center rounded-xl  w-full font-bold border-deep_orange bg-soft_fresh_green text-deep_orange border-[3px] shadow-[0px_3px_0px_0px_rgba(176,_99,_56,_1)] hover:shadow-[0px_1px_0px_0px_rgba(176,_99,_56,_1)] active:shadow-[0px_0px_0px_0px_rgba(176,_99,_56,_1)] hover:top-[1px] active:bg-very_light_saturated_orange"
+            >
               <div className="flex flex-col bg-warm_peachy_orange p-2 rounded-lg">
                 <ShoppingCart size={32} className="text-soft_fresh_green" />
               </div>
@@ -63,7 +79,7 @@ const Header = () => {
               </button>
             ) : (
               <button
-                onClick={() => handleOpen()}
+                onClick={() => handleOpenLoginRegister()}
                 className="relative rounded-full px-9 p-2  font-bold border-deep_orange bg-soft_fresh_green text-deep_orange border-[3px] shadow-[0px_3px_0px_0px_rgba(176,_99,_56,_1)] hover:shadow-[0px_1px_0px_0px_rgba(176,_99,_56,_1)] active:shadow-[0px_0px_0px_0px_rgba(176,_99,_56,_1)] hover:top-[1px] active:bg-very_light_saturated_orange"
               >
                 <p className="text-lg">{"entrar".toUpperCase()}</p>
@@ -72,9 +88,11 @@ const Header = () => {
           </div>
         </div>
       </div>
-      {isLoginRegisterActive && (
-        <LoginRegister activate={isLoginRegisterActive} onClose={handleClose} />
-      )}
+      <LoginRegister
+        activate={isLoginRegisterActive}
+        onClose={handleCloseLoginRegister}
+      />
+      <CartItems activate={isCardItemsActive} onClose={handleCloseCardItems} />
     </>
   );
 };

@@ -15,7 +15,7 @@ const login = async (userData) => {
   const userToCreateToken = {
     email: userFound.email,
     password: userFound.password,
-    id: userFound.id_user,
+    id_user: userFound.id_user,
   };
 
   const [errUserToken, createToken] = globalUtils.trySync(() =>

@@ -51,6 +51,7 @@ const LoginRegister: FC<LoginRegisterProps> = ({ activate, onClose }) => {
     email?: string;
     password?: string;
     confirmPassword?: string;
+    loginFail?: string;
   };
 
   const [errors, setErrors] = useState<FormErrors>({});
@@ -99,6 +100,51 @@ const LoginRegister: FC<LoginRegisterProps> = ({ activate, onClose }) => {
     }
   };
 
+  const login = async () => {
+    const newErrors: FormErrors = {};
+
+    if (!email || email.trim() === "") {
+      newErrors.email = "O e-mail é obrigatório.";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      newErrors.email = "Formato de e-mail inválido.";
+    }
+
+    if (!password || password.trim() === "") {
+      newErrors.password = "A senha é obrigatória.";
+    } else if (password.length < 6) {
+      newErrors.password = "A senha deve ter no mínimo 6 caracteres.";
+    }
+
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length > 0) return;
+
+    try {
+      const response = await axios.post(
+        `http://${host}:${port}/api/users/login`,
+        { email, password }
+      );
+
+      const token = response.data?.token;
+
+      if (token) {
+        cookies.set("jwt_authorization", token);
+        window.location.reload();
+      }
+    } catch (error: any) {
+      const msg =
+        error.response?.data?.error ||
+        error.response?.data?.message ||
+        "Erro ao tentar entrar. Tente novamente.";
+
+      newErrors.loginFail = msg;
+      setErrors((prev) => ({
+        ...prev,
+        loginFail: msg,
+      }));
+    }
+  };
+
   return (
     <div
       className={`fixed inset-0 z-20 bg-black/30 flex justify-center items-center
@@ -138,10 +184,18 @@ const LoginRegister: FC<LoginRegisterProps> = ({ activate, onClose }) => {
                 </label>
                 <input
                   type="text"
+                  onBlur={(e) => setEmail(e.target.value)}
                   className="focus:outline-none  border-4 text-heading text-md rounded-xl border-warm_peachy_orange focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body"
                   placeholder="Digite seu email..."
                   required
                 />
+                <span
+                  className={`${
+                    errors.email ? "block" : "hidden"
+                  } text-sm text-red-500 text-heading`}
+                >
+                  {errors.email}
+                </span>
               </div>
               <div className="flex flex-col gap-2">
                 <label className="block text-md font-semibold text-heading">
@@ -149,20 +203,35 @@ const LoginRegister: FC<LoginRegisterProps> = ({ activate, onClose }) => {
                 </label>
                 <input
                   type="text"
+                  onBlur={(e) => setPassword(e.target.value)}
                   className="focus:outline-none  border-4 text-heading text-md rounded-xl border-warm_peachy_orange focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body"
                   placeholder="Digite sua senha..."
                   required
                 />
+                <span
+                  className={`${
+                    errors.password ? "block" : "hidden"
+                  } text-sm text-red-500 text-heading`}
+                >
+                  {errors.password}
+                </span>
               </div>
             </div>
 
+            <span
+              className={`${
+                errors.loginFail ? "block" : "hidden"
+              } text-sm text-red-500 text-heading`}
+            >
+              {errors.loginFail}
+            </span>
+
             <button
-              // onClick={() => login()}
+              onClick={() => login()}
               className="relative rounded-full px-9 p-3.5 font-bold border-deep_orange bg-soft_fresh_green text-deep_orange border-[3px] shadow-[0px_3px_0px_0px_rgba(176,_99,_56,_1)] hover:shadow-[0px_1px_0px_0px_rgba(176,_99,_56,_1)] active:shadow-[0px_0px_0px_0px_rgba(176,_99,_56,_1)] hover:top-[1px] active:bg-very_light_saturated_orange"
             >
-              <p className="text-lg">{"entrar".toUpperCase()}</p>
+              <p className="text-lg">{"entrar na conta".toUpperCase()}</p>
             </button>
-
             <p>
               Ainda não possui uma conta?{" "}
               <a

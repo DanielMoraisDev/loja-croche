@@ -1,7 +1,7 @@
 import conn from "../db/postgres.js";
 import { DataTypes } from "sequelize";
-import { table_mysql as table_products } from "./productSchema.js";
-import { table_mysql as table_users } from "./userSchema.js";
+import Product, { table_mysql as table_products } from "./productSchema.js";
+import User, { table_mysql as table_users } from "./userSchema.js";
 
 const table_mysql = "cart_items";
 

@@ -1,16 +1,10 @@
 import globalUtils from "../../utils/globalUtils.js";
-import User from "../../models/userSchema.js";
+import userModules from "./modules/userModules.js";
 
 export const updateUser = async (req, res) => {
   try {
     const id = req.user.id;
     const { name, email, password } = req.body;
-
-    const existingUser = await User.findByPk(id);
-
-    if (!existingUser) {
-      return res.status(404).json({ error: "Usuário não encontrado" });
-    }
 
     const user = {
       name: name,

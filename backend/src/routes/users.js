@@ -17,7 +17,9 @@ usersRouter.route("/").get(globalMiddlewares.authToken, userController.getOne);
 
 usersRouter.route("/").put(globalMiddlewares.authToken, userController.update);
 
-usersRouter.route("/").get(globalMiddlewares.authToken, userController.getAll);
+usersRouter
+  .route("/all")
+  .get(globalMiddlewares.authToken, userController.getAll);
 
 usersRouter
   .route("/")

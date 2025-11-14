@@ -7,11 +7,14 @@ import LoginRegister from "../LoginRegister/section";
 const Header = () => {
   const cookies = new Cookies();
   const [userToken, setUserToken] = useState<string | null>(null);
-  const cookieTokenUser = cookies.get("jwt_authorization");
-  if (cookieTokenUser != null) {
-    setUserToken(cookieTokenUser);
-  }
   const [isLogged, setIsLogged] = useState<boolean>(false);
+
+  useEffect(() => {
+    const token = cookies.get("jwt_authorization");
+    if (token) {
+      setUserToken(token);
+    }
+  }, []);
 
   useEffect(() => {
     if (userToken) {

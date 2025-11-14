@@ -3,7 +3,7 @@ import configs from "../config.js";
 
 const createToken = (users, req, res) => {
   const payload = {
-    id: users.usuario_id,
+    id: users.id_user,
     password: users.password,
     email: users.email,
   };

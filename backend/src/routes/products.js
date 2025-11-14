@@ -4,6 +4,7 @@ const productsRouter = express.Router();
 
 import productController from "../controllers/products/productController.js";
 import { imageUpload } from "../middleware/image-upload.js";
+import globalMiddlewares from "../middleware/globalMiddlewares.js";
 
 productsRouter
   .route("/")
@@ -21,9 +22,9 @@ productsRouter
     return productController.update(req, res);
   });
 
-productsRouter.route("/").get((req, res) => {
-  return productController.getAll(req, res);
-});
+productsRouter
+  .route("/")
+  .get(globalMiddlewares.authTokenWithoutMandatory, productController.getAll);
 
 productsRouter.route("/:id").delete((req, res) => {
   return productController.delete(req, res);
